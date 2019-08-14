@@ -1,0 +1,57 @@
+[
+    {
+        "goodsId": 1,
+        "goodsName": "全心全意",
+        "price": 0.1
+    },
+    {
+        "goodsId": 2,
+        "goodsName": "榴恋草莓",
+        "price": 0.2
+    },
+    {
+        "goodsId": 3,
+        "goodsName": "榴莲千层",
+        "price": 0.3
+    },
+    {
+        "goodsId": 7,
+        "goodsName": "四重奏蛋糕",
+        "price": 0.4
+    },
+    {
+        "goodsId": 8,
+        "goodsName": "草莓白天使",
+        "price": 0.5
+    },
+    {
+        "goodsId": 9,
+        "goodsName": "鹏程万里",
+        "price": 0.6
+    },
+    {
+        "goodsId": 10,
+        "goodsName": "红丝绒甜心",
+        "price": 0.7
+    },
+    {
+        "goodsId": 11,
+        "goodsName": "潮爆牛煲",
+        "price": 0.8
+    },
+    {
+        "goodsId": 12,
+        "goodsName": "小食拼盘",
+        "price": 0.9
+    },
+    {
+        "goodsId": 13,
+        "goodsName": "牛肉丸粿条",
+        "price": 1
+    },
+    {
+        "goodsId": 14,
+        "goodsName": "草粿",
+        "price": 100
+    }
+]

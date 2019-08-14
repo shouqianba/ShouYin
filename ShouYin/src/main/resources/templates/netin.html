@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>商户入网</title>
+    <link rel="shortcut icon"  href="../images/1.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="../fonts/iconfont.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.ssddp.min.css">
+    <link rel="stylesheet" href="../css/element-ui.css">
+    <link rel="stylesheet" href="../css/pos.css">
+    <link rel="stylesheet" href="../css/bootstrap.ssddp.min.netin.css">
+
+    <!--图片上传-->
+    <link href="https://cdn.bootcss.com/bootstrap-fileinput/3.0.0/css/fileinput.min.css" rel="stylesheet">
+    <!--图片上传-->
+
+    <!--时间-->
+    <link rel="stylesheet" href="../css/date/styles.css" >
+    <!--时间-->
+</head>
+<body>
+<nav class="nav navbar-default">
+    <div class="container-fluid">
+        <!--小屏幕导航按钮和logo-->
+        <div class="navbar-header">
+            <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">SSDDP</a>
+        </div>
+        <!--小屏幕导航按钮和logo-->
+        <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li  class="active"><a href="#" id="banks"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;&nbsp;商户入网</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;&nbsp;商户信息</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-remove-sign"></span>&nbsp;&nbsp;&nbsp;商户禁用</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-credit-card"></span>&nbsp;&nbsp;&nbsp;开户银行</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;&nbsp;支行列表</a></li>
+                </ul>
+        </div>
+    </div>
+</nav>
+<div class="page-header">
+    <h1 style="margin-left: 20px">商户入网<span style="margin-right: 0" class="navbar-right"><a style="color: red">*</a>为必填字段</span></h1>
+</div>
+
+<a class="btn btn-default" href="#" role="button" id="submit">提交</a>
+<!-- 商户信息-->
+<div class="col-md-6">
+    <div class="panel panel-default">
+     <div class="panel-heading">
+          商户信息
+     </div>
+     <div class="panel-body">
+    <div class="table">
+        <table>
+            <tbody>
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;商户名</th>
+                <td><input type="text" id="name" class="form-control" placeholder="商户名"  maxlength="40" style="border-radius: 5px 5px 5px 5px;"></input></td>
+            </tr>
+            <tr>
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;商户经营名称</th>
+                <td><input type="text" id="business_name" class="form-control" placeholder="商户经营名称" maxlength="32" style="border-radius: 5px 5px 5px 5px;"></input></td>
+            </tr>
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;联系人</th>
+                <td><input type="text" id="contact_name" class="form-control" placeholder="联系人" maxlength="10" style="border-radius: 5px 5px 5px 5px;"></input></td>
+            </tr>
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;联系电话</th>
+                <td><input type="text" id="contact_cellphone"  class="form-control" placeholder="联系电话" maxlength="32" style="border-radius: 5px 5px 5px 5px;"></input></td>
+            </tr>
+       <!--     <tr>
+                <th><span style="color: red">*</span>&nbsp;行业</th>
+            </tr>-->
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;地区</th>
+                <td >
+                    <!--省市区三级联动-->
+                    <span class="form-inline">
+                        <div data-toggle="distpicker">
+                            <div class="form-group">
+                                <label class="sr-only" for="Province">Province</label>
+                                <select class="form-control" id="Province">
+                                    <option id="opProvince" th:each="p:${provinceList}" th:value="${p.code}" th:text="${p.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="sr-only" for="City">City</label>
+                                <select class="form-control" id="City">
+                                     <option id="opCity" th:each="c:${cityList}"  th:value="${c.code}" th:text="${c.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="sr-only" for="Region">Region</label>
+                                <select class="form-control" id="Region">
+                                     <option id="opRegion" th:each="r:${regionList}" th:value="${r.area_code}" th:text="${r.space_name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </span>
+                    <!--省市区三级联动-->
+                </td>
+            </tr>
+        <tr>
+            <th><span style="color: red">*</span>&nbsp;详细地址</th>
+            <td><input type="text" id="street_address" class="form-control" placeholder="详细地址" maxlength="128" style="border-radius: 5px 5px 5px 5px;"></input></td>
+        </tr>
+            </tbody>
+        </table>
+    </div>
+     </div>
+    </div>
+</div>
+<!-- 商户信息-->
+
+<!--银行账户信息-->
+<div class="col-md-6" id="YHZH">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            银行账户信息
+        </div>
+        <div class="panel-body">
+        <table>
+            <tbody>
+         <tr>
+                <th><span style="color: red">*</span>&nbsp;账户类型</th>
+                <td>
+                    <span class="form-inline">
+                        <div data-toggle="distpicker">
+                            <div class="form-group">
+                                <label class="sr-only" for="account_type">Province</label>
+                                <select class="form-control" id="account_type">
+                                    <option th:value="2" th:text="企业账户"></option>
+                                    <option th:value="1" th:text="个人账户"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </span>
+                </td>
+          </tr>
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;银行卡号</th>
+                <td><input type="text" id="bank_card"  class="form-control" placeholder="银行卡号" maxlength="45" onkeyup='this.value=this.value.replace(/\D/gi,"")' style="border-radius: 5px 5px 5px 5px;"></input><span style="color: red" id="bank_cardError"></span></td>
+            </tr>
+            <tr>
+                <th style="width: 100px;">银行卡有效期</th>
+                <td>
+                    <div class="iDate date">
+                        <input type="text" id="card_validity">
+                        <button type="button" class="addOn"></button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;开户银行</th>
+                <td><input type="text" id="bank_name" readonly="readonly"  class="form-control" placeholder="开户银行" style="border-radius: 5px 5px 5px 5px;"></input></td>
+            </tr>
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;开户地区</th>
+                <td>
+                <!--开户地区三级联动-->
+                <span class="form-inline">
+                        <div data-toggle="distpicker">
+                            <div class="form-group">
+                                <label class="sr-only" for="Province">bank_areaProvince</label>
+                                <select class="form-control" id="bank_areaProvince">
+                                    <option id="bank_areaopProvince" th:each="p:${provinceList}" th:value="${p.code}" th:text="${p.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="sr-only" for="City">bank_areaCity</label>
+                                <select class="form-control" id="bank_areaCity">
+                                     <option id="bank_areaopCity" th:each="c:${cityList}"  th:value="${c.code}" th:text="${c.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="sr-only" for="Region">bank_areaRegion</label>
+                                <select class="form-control" id="bank_areaRegion">
+                                     <option id="bank_areaopRegion" th:each="r:${regionList}" th:value="${r.area_code}" th:text="${r.space_name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </span>
+                    <!--开户地区三级联动-->
+                </td>
+            </tr>
+            <tr>
+                <th><span style="color: red">*</span>&nbsp;开户支行</th>
+                <td>
+                    <div data-toggle="distpicker">
+                    <div class="form-group">
+                        <label class="sr-only" for="Province">Province</label>
+                        <select class="form-control" id="branch_name">
+                            <option id="opBranch_name"></option>
+                        </select>
+                    </div>
+                    </div>
+                </td>
+            </tr>
+        <tr>
+            <th><span style="color: red">*</span>&nbsp;开户姓名</th>
+            <td>
+                <input type="text" id="holder"  maxlength="45" class="form-control" placeholder="开户姓名" style="border-radius: 5px 5px 5px 5px;"></input>
+            </td>
+        </tr>
+        </tbody>
+     </table>
+        </div>
+</div>
+</div>
+<!--银行账户信息-->
+
+<!--证件信息2-->
+<div class="col-md-6" >
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            证件信息
+        </div>
+        <div class="panel-body">
+            <table>
+                <tbody>
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;证件类型</th>
+                    <td>
+                         <span class="form-inline">
+                        <div data-toggle="distpicker">
+                            <div class="form-group">
+                                <label class="sr-only" for="account_type">Province</label>
+                                <select class="form-control" id="license_type">
+                                    <option th:value="1" th:text="营业执照"></option>
+                                    <option th:value="2" th:text="事业单位法人证书"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;法人姓名</th>
+                    <td><input type="text" id="legal_person_name"  class="form-control" placeholder="法人姓名" maxlength="100" style="border-radius: 5px 5px 5px 5px;"></input></td>
+                </tr>
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;法人证件类型</th>
+                    <td>
+                          <span class="form-inline">
+                        <div data-toggle="distpicker">
+                            <div class="form-group">
+                                <label class="sr-only" for="account_type">Province</label>
+                                <select class="form-control" id="legal_person_id_type">
+                                    <option th:value="1" th:text="身份证"></option>
+                                    <option th:value="2" th:text="非中国护照"></option>
+                                    <option th:value="3" th:text="台胞证"></option>
+                                    <option th:value="4" th:text="港澳通行证"></option>
+                                    <option th:value="5" th:text="中国护照"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;法人证件号码</th>
+                    <td><input type="text" id="legal_person_id_number" maxlength="18" class="form-control" placeholder="法人证件号码" style="border-radius: 5px 5px 5px 5px;"></input></td>
+                </tr>
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;工商注册号</th>
+                    <td><input type="text" id="tax_payer_id" maxlength="18" class="form-control" placeholder="工商注册号" style="border-radius: 5px 5px 5px 5px;"></input></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--证件信息2-->
+
+<!--证件信息-->
+<div class="col-md-6" >
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            开户人证件信息
+        </div>
+        <div class="panel-body">
+            <table>
+                <tbody>
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;开户人证件类型</th>
+                    <td>
+                         <span class="form-inline">
+                        <div data-toggle="distpicker">
+                            <div class="form-group">
+                                <label class="sr-only" for="account_type">Province</label>
+                                <select class="form-control" id="id_type">
+                                    <option th:value="1" th:text="身份证"></option>
+                                    <option th:value="2" th:text="非中国护照"></option>
+                                    <option th:value="3" th:text="台胞证"></option>
+                                    <option th:value="4" th:text="港澳通行证"></option>
+                                    <option th:value="5" th:text="中国护照"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;开户人证件号</th>
+                    <td><input type="text" id="identity"  class="form-control" placeholder="证件号" maxlength="18" style="border-radius: 5px 5px 5px 5px;"></input></td>
+                </tr>
+                <tr>
+                    <th style="width: 100px;">开户人证件有效期</th>
+                    <td>
+                        <div class="iDate date">
+                            <input type="text" id="id_validity">
+                            <button type="button" class="addOn"></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>预留手机号</th>
+                    <td><input type="text" id="bank_cellphone" maxlength="32" class="form-control" placeholder="预留手机号" style="border-radius: 5px 5px 5px 5px;"></input></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--证件信息-->
+
+<!--真实性照片-->
+<div class="col-md-12">
+   <div class="panel panel-default">
+    <div class="panel-heading">
+        真实性照片
+    </div>
+       <div class="panel-body">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;银行卡照片</th>
+                    <td>
+                        <input type="file" name="image" id="bank_card_image" class="file"  accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;身份证正面照</th>
+                    <td>
+                        <input type="file" name="image" id="holder_id_front_photo" class="file"  accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;身份证反面照</th>
+                    <td>
+                        <input type="file" name="image" id="holder_id_back_photo" class="file"  accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;门头照片</th>
+                    <td>
+                        <input type="file" name="image" id="brand_photo" class="file" accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;室内照片</th>
+                    <td>
+                        <input type="file" name="image" id="indoor_photo" class="file" accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;室外照片</th>
+                    <td>
+                        <input type="file" name="image" id="outdoor_photo" class="file"  accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;法人证件正面照</th>
+                    <td>
+                        <div id="a">
+                            <input type="file" name="image" id="legal_person_id_card_front_photo" class="file" accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;法人证件反面照</th>
+                    <td>
+                        <div id="b">
+                            <input type="file" name="image" id="legal_person_id_card_back_photo" class="file"  accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><span style="color: red">*</span>&nbsp;营业执照</th>
+                    <td>
+                        <div id="c">
+                        <input type="file" name="image" id="business_license_photo" class="file"  accept="image/jpg,image/jpeg,image/png,image/bmp" onchange="getImgURL(this)"/>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+       </div>
+   </div>
+</div>
+<!--真实性照片-->
+
+<!--备注-->
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            备注
+        </div>
+        <div class="panel-body">
+    <textarea style="width: 100%;height: 100px;overflow-x:hidden;overflow-y:scroll;"
+              maxlength="255" onchange="this.value=this.value.substring(0, 255)" onkeydown="this.value=this.value.substring(0, 255)" onkeyup="this.value=this.value.substring(0, 255)"></textarea>
+    <div>
+    </div>
+</div>
+    </div>
+</div>
+<!--备注-->
+
+
+</body>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<!-- 先引入 Vue -->
+<script src="../js/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../js/index.js"></script>
+<!-- 引入axios -->
+<script src="../js/axios.min.js"></script>
+<!--生成二维码js-->
+<script src="../js/jquery.qrcode.min.js"></script>
+
+<script src="../js/bootstrap.min.js"></script>
+
+<!--图片上传-->
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/3.0.0/js/fileinput.min.js"></script>
+<script src="../js/zh.js"></script>
+
+
+<!--时间控件-->
+<script src="../js/date/moment.js"></script>
+<script src="../js/date/bootstrap-datetimepicker.js"></script>
+
+<script>
+    /*时间*/
+    $(document).ready(function(){
+        if($(".iDate.date").length>0){
+            $(".iDate.date").datetimepicker({
+                locale:"zh-cn",
+                format:"YYYY-MM-DD",
+                dayViewHeaderFormat:"YYYY年 MMMM"
+            });
+        }
+    })
+    /*时间*/
+
+  var a = document.getElementsByName("image");
+   $(a).change(function(e) {
+       // alert($(this).getPath());
+        $.ajax({
+            type: "POST",
+            url: "/NetIn/ImageStr",
+            data: {imgFile: $(this).val(),
+            },
+            dataType: "json",
+            success: function (data) {
+                alert(data)
+            }
+        })
+    });
+
+</script>
+
+<script>
+    $(function () {
+
+        //开户银行接口
+        $("#bank_card").blur(function(){
+            $("#bank_cardError").html('');
+            $.ajax({
+                type: "POST",
+                url: "/NetIn/banks",
+                data: {bank_card: $("#bank_card").val(),
+                },
+                dataType: "json",
+                success: function (data) {
+                    if(data.result_code == 400){
+                        $("#bank_name").val(" ");
+                        $("#bank_name").empty();
+                        $("#bank_cardError").html(data.error_message)
+                        return false;
+                    }
+                    if(data.result_code == 200){
+                        $("#bank_name").empty();
+                        $("#bank_name").val(data.biz_response.data)
+                    }
+                }
+            })
+        })
+
+        /*地区*/
+        //区市级联动
+        $("#Province").bind("change",function () {
+            $("#City").empty();
+            $("#Region").empty();
+            $.ajax({
+                type: "POST",
+                url: "/NetIn/Pcr",
+                data: {Province:$(this).val()},
+                dataType: "json",
+                success: function (data) {
+                    //加载区
+                  var City = $("#City")
+                  var Data = data.cityList;
+                  for(var key in Data){
+                      City.append("<option value='"+Data[key].code+"'>"+Data[key].name+"</option>");
+                  }
+
+                    //加载市
+                  var Region = $("#Region")
+                  var Data = data.regionList;
+                  for(var key in Data){
+                      Region.append("<option value='"+Data[key].area_code+"'>"+Data[key].space_name+"</option>");
+                   }
+
+                }
+            })
+        })
+        //市级联动
+        $("#City").bind("change",function () {
+            $("#Region").empty();
+            $.ajax({
+                type: "POST",
+                url: "/NetIn/Pcr2",
+                data: {City:$(this).val()},
+                dataType: "json",
+                success: function (data) {
+                    //加载市
+                    var Region = $("#Region")
+                    var Data = data.regionList;
+                    for(var key in Data){
+                        Region.append("<option value='"+Data[key].area_code+"'>"+Data[key].space_name+"</option>");
+                    }
+                }
+            })
+        })
+        /*地区*/
+
+        /*开户地区*/
+        //区市级联动
+        $("#bank_areaProvince").bind("change",function () {
+            $("#bank_areaCity").empty();
+            $("#bank_areaRegion").empty();
+            $.ajax({
+                type: "POST",
+                url: "/NetIn/Pcr",
+                data: {Province:$(this).val()},
+                dataType: "json",
+                success: function (data) {
+                    //加载区
+                    var City = $("#bank_areaCity")
+                    var Data = data.cityList;
+                    for(var key in Data){
+                        City.append("<option value='"+Data[key].code+"'>"+Data[key].name+"</option>");
+                    }
+
+                    //加载市
+                    var Region = $("#bank_areaRegion")
+                    var Data = data.regionList;
+                    for(var key in Data){
+                        Region.append("<option value='"+Data[key].area_code+"'>"+Data[key].space_name+"</option>");
+                    }
+
+                }
+            })
+        })
+        //市级联动
+        $("#bank_areaCity").bind("change",function () {
+            $("#bank_areaRegion").empty();
+            $.ajax({
+                type: "POST",
+                url: "/NetIn/Pcr2",
+                data: {City:$(this).val()},
+                dataType: "json",
+                success: function (data) {
+                    //加载市
+                    var Region = $("#bank_areaRegion")
+                    var Data = data.regionList;
+                    for(var key in Data){
+                        Region.append("<option value='"+Data[key].area_code+"'>"+Data[key].space_name+"</option>");
+                    }
+                }
+            })
+        })
+        /*开户地区*/
+
+        /*开户支行*/
+        $("#bank_areaRegion").bind("change",function () {
+            $("#branch_name").empty();
+            $.ajax({
+                type: "POST",
+                url: "/NetIn/branches",
+                data: {bank_name:$("#bank_name").val(),bank_area:$("#bank_areaRegion").val()},
+                dataType: "json",
+                success: function (data) {
+                    $.each(data,function (n,value) {
+                        $("#branch_name").append("<option value='"+value+"'>"+value+"</option>");
+                    })
+                }
+            })
+        })
+        /*开户支行*/
+
+        /*选择个人账户禁用*/
+        $("#account_type").bind("change",function () {
+                if($(this).val() == 1){
+                    $("#license_type").attr("disabled","disabled");
+                    $("#legal_person_name").attr("disabled","disabled");
+                    $("#legal_person_id_type").attr("disabled","disabled");
+                    $("#legal_person_id_number").attr("disabled","disabled");
+                    $("#tax_payer_id").attr("disabled","disabled");
+                    document.getElementById("a").style.display="none";
+                    document.getElementById("b").style.display="none";
+                    document.getElementById("c").style.display="none";
+                }
+                if($(this).val() == 2){
+                    $("#license_type").removeAttr("disabled");
+                    $("#legal_person_name").removeAttr("disabled");
+                    $("#legal_person_id_type").removeAttr("disabled");
+                    $("#legal_person_id_number").removeAttr("disabled");
+                    $("#tax_payer_id").removeAttr("disabled");
+                    document.getElementById("a").style.display="";
+                    document.getElementById("b").style.display="";
+                    document.getElementById("c").style.display="";
+                    /* $("#license_type").append("<option value='1'>营业执照</option>");
+                       $("#license_type").append("<option value='2'>事业单位法人证书</option>");*/
+                }
+        })
+        /*选择个人账户禁用*/
+    })
+</script>
+</html>

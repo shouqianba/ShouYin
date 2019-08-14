@@ -1,0 +1,18 @@
+table tr th{
+    width: 100px;
+    height: 53px;
+}
+
+table tr td{
+    width: 639px;
+}
+#YHZH{
+    height: 460px;
+}
+#submit{
+    position: fixed;
+    z-index: 999;
+    top: 353px;
+    right: 1px;
+}
+/*图片上传*/

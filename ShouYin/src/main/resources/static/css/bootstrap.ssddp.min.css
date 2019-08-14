@@ -1,0 +1,80 @@
+/*查询*/
+.glyphicon-search{
+        display: block;
+         font-size: 30px;
+        margin-bottom: 10px;
+}
+
+/*撤单*/
+.glyphicon-hourglass{
+    display: block;
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+/*结果集文本域*/
+.ResultTextarea{
+    width: 1100px;
+    height: 403px;
+    font-size: 20px;
+    position: absolute;
+    bottom: 0px;
+    overflow-x: auto;
+    resize: none;
+    background: #ececec;
+    border: 0;
+}
+
+/*支付进度条*/
+.JDT{
+    height: 150px;
+}
+.JDTTP{
+    position: absolute;
+    height:150px;
+    width: 100%;
+    left: 0;
+    top: 0;
+    text-align: center;
+}
+
+/*netin.html*/
+.nav .navbar-nav{
+    font-size: 15px;
+}
+
+/*SSDDP*/
+.navbar-default .navbar-brand{
+    font-size: 25px;
+    font-weight: bold;
+    color:  #ebcccc;
+    line-height: 25px;
+}
+/*SSDDP*/
+.navbar-default .navbar-brand:hover{
+    font-size: 25px;
+    font-weight: bold;
+    color:  #ebcccc;
+    line-height: 25px;
+}
+
+.navbar-default .navbar-nav > li >a{
+    font-size: 16px;
+    color: #666;
+    line-height: 25px;
+}
+
+.table>tbody>tr>th{
+    border:0px;
+}
+
+.table>tbody>tr>td{
+    border:0px;
+}
+
+.form-control{
+    width: 80%
+}
+.calendar-hd{
+    height: 46px;
+}
