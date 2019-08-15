@@ -82,8 +82,15 @@
           </div>
           <div class="foot-btn">
             <!--<el-button type="warning" >挂单</el-button>-->
-            <el-button type="danger" @click="delAllGoods">删除</el-button>
-            <el-button type="success" @click="checkout">结账</el-button>
+            <button type="button" class="btn btn-danger" @click="delAllGoods">删除所选商品</button>
+            <br>
+            <br>
+            <button type="button" class="btn btn-success ZFB" >支付宝付款</button>
+            <button type="button" class="btn btn-success WX">微信付款</button>
+             <br>
+            <br>
+            <button type="button" class="btn btn-success TM">条码付款</button>
+            <button type="button" class="btn btn-success Pro">聚合付款</button>
           </div>
         </el-col>
         <el-col :span="18">
@@ -875,6 +882,23 @@
                     alert("成功");
                 }
             })*/
+        })
+
+        //支付宝支付
+        $(".ZFB").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/Shouyin/a",
+                data: {
+                    total_amount:$("#zongjia").text()*100,
+                    payway:"1",
+                    hb_fq_seller_percent:"100",
+                    hb_fq_num:"12"},
+                dataType: "json",
+                success : function (data) {
+                    alert(data)
+                }
+            })
         })
     })
 

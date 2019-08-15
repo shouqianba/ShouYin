@@ -1,4 +1,6 @@
 package com.shouyin.shouyin;
+import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
+@Slf4j
 public class HttpProxy {
     private String api_domain ="https://api.shouqianba.com";
     private final static String CHARSET_UTF8 = "utf8";
@@ -102,7 +105,7 @@ public class HttpProxy {
      * @param  total_amount:交易总金额
      * @return
      */
-    public  String precreate(String terminal_sn,String terminal_key,String total_amount,String hb_fq_seller_percent,String hb_fq_num) throws JSONException {
+    public  String precreate(String terminal_sn,String terminal_key,String payway,String total_amount,String hb_fq_seller_percent,String hb_fq_num,HttpServletRequest request) throws JSONException {
         String url = api_domain + "/upay/v2/precreate";
         JSONObject params = new JSONObject();
 
@@ -116,20 +119,55 @@ public class HttpProxy {
             params.put("terminal_sn","100003640007866849");           //收钱吧终端ID
             params.put("client_sn",getClient_Sn(16));  //商户系统订单号,必须在商户系统内唯一；且长度不超过32字节
             params.put("total_amount",total_amount);               //交易总金额
-            params.put("payway","1");	                     //支付方式
-            //params.put("sub_payway","3");
+            params.put("payway",payway);	                     //支付方式
+            //params.put("sub_payway","3");                     //二级支付方式
            // params.put("payer_uid","okSzXt6LaRSqxwYDoa9LIRSYWoEY");
             params.put("subject","Pizza");	                 //交易简介
             params.put("operator","Kay");
             //params.put("extended",map2);
-            params.put("notify_url","http://llp-love-llx.com/shouqianba/callback/orderdetail"); // 	服务器异步回调 url//门店操作员
-            //params.put("sub_payway","2");	                 //二级支付方式
+            params.put("notify_url","http://llp-love-llx.com/Shouyin/precreate"); // 	服务器异步回调 url//门店操作员
             System.out.println("params.toString()"+params.toString());
             String sign = getSign(params.toString() + "ed8ded88da8e35bee0282694faabdf5a");
             String result = HttpUtil.httpPost(url, params.toString(),sign,"100003640007866849");
             System.out.println("result:"+result);
-            return  result;
-        }catch (Exception e){
+
+
+            String Notifysign = request.getHeader("Authorization");
+            log.info("【回调sign】Authorization={}",Notifysign);
+            int contentLength = request.getContentLength();
+            if (contentLength < 0) {
+                 return null;
+            }
+            byte[] buffer = new byte[contentLength];
+             for (int i = 0; i < contentLength;) {
+                int readlen = request.getInputStream().read(buffer, i, contentLength - i);
+                    if (readlen == -1) {
+                        break;
+                    }
+                    i += readlen;
+                }
+             String charEncoding = request.getCharacterEncoding();
+                if (charEncoding == null) {
+                    charEncoding = "UTF-8";
+                }
+             String backData = new String(buffer, charEncoding);
+             log.info("【回调body】backData={}",backData);
+             Gson gson = new Gson();
+             Map<String,Object> Notifymap = new HashMap<String,Object>();
+             Notifymap = gson.fromJson(backData,Notifymap.getClass());
+
+
+             log.info("【收钱吧订单号】：sn={}",Notifymap.get("sn"));
+             log.info("【收钱吧商户内部订单号】：client_sn={}",Notifymap.get("client_sn"));
+
+             System.out.println("【收钱吧订单号】：sn={}"+Notifymap.get("sn"));
+             System.out.println("【收钱吧商户内部订单号】：client_sn={}"+Notifymap.get("client_sn"));
+             System.out.println("【收钱吧订单状态】：order_status={}"+Notifymap.get("order_status"));
+                return "success";
+            } catch (IOException e) {
+                log.error("【回调异常】IOException={}",e.getMessage());
+                return "file";
+            }catch (Exception e){
             return null;
         }
     }
@@ -298,28 +336,5 @@ public class HttpProxy {
         newStr.append(str+"sign="+sign);
         System.out.println("newStr.toString():"+newStr.toString());
         return  newStr.toString();
-    }
-
-
-    /**
-     * 支行列表接口
-     * @param bank_card
-     * @param terminal_sn
-     * @param terminal_key
-     * @return
-     */
-    public  String banks(String bank_card,String terminal_sn,String terminal_key) {
-        String url = "http://api-sandbox.test.shouqianba.com/v2/merchant/banks";
-        JSONObject params = new JSONObject();
-        try{
-            params.put("bank_card","6214852114497459");                                   //appid，必填
-            String sign = getSign(params.toString() + "bf6a1021f1e788e8c9affd1f4ae0e982");
-            System.out.println(sign);
-            String result = HttpUtil.httpPost(url, params.toString(),sign,"91800129");
-            System.out.println(result);
-            return result;
-        }catch (Exception e){
-            return null;
-        }
     }
 }

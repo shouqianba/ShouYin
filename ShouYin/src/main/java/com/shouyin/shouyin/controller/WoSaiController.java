@@ -117,15 +117,16 @@ public class WoSaiController {
      */
     @RequestMapping("/precreate")
     @ResponseBody
-    public  String precreate(String terminal_sn,String terminal_key,String total_amount,String hb_fq_seller_percent,String hb_fq_num) throws JSONException {
+    public  String precreate(String terminal_sn,String terminal_key,String payway,String total_amount,String hb_fq_seller_percent,String hb_fq_num,HttpServletRequest request) throws JSONException {
         //获取保存在内存中的终端号，终端密钥
         terminal_sn = ys.getInstance().getZdh();
         terminal_key = ys.getInstance().getMy();
 
         System.out.println("precreate:"+"terminal_sn"+terminal_sn+"terminal_key"+terminal_key+"total_amount"+total_amount);
-        String result = httpProxy.precreate(terminal_sn,terminal_key,total_amount,hb_fq_seller_percent,hb_fq_num);
+        String result = httpProxy.precreate(terminal_sn,terminal_key,payway,total_amount,hb_fq_seller_percent,hb_fq_num,request);
         System.out.println("precreate.MyAndZdh:"+ys.getInstance().getMy()+"终端号:"+ys.getInstance().getZdh());
         System.out.println("precreate.toString():"+result.toString());
+
         return result.toString();
     }
 
@@ -219,61 +220,17 @@ public class WoSaiController {
         System.out.println("wapapipro.toString()"+result.toString());
         return result.toString();
     }
+    @RequestMapping("/a")
 
-    /*@RequestMapping("/callback")
-    @ResponseBody
-    public static boolean validateSign(String data, String sign, String publicKey){
-        try {
-            Signature signature = Signature.getInstance("SHA256WithRSA");
-
-        PublicKey localPublicKey = getPublicKeyFromX509("RSA", "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5+MNqcjgw4bsSWhJfw2M\n" +
-                "+gQB7P+pEiYOfvRmA6kt7Wisp0J3JbOtsLXGnErn5ZY2D8KkSAHtMYbeddphFZQJ\n" +
-                "zUbiaDi75GUAG9XS3MfoKAhvNkK15VcCd8hFgNYCZdwEjZrvx6Zu1B7c29S64LQP\n" +
-                "HceS0nyXF8DwMIVRcIWKy02cexgX0UmUPE0A2sJFoV19ogAHaBIhx5FkTy+eeBJE\n" +
-                "bU03Do97q5G9IN1O3TssvbYBAzugz+yUPww2LadaKexhJGg+5+ufoDd0+V3oFL0/\n" +
-                "ebkJvD0uiBzdE3/ci/tANpInHAUDIHoWZCKxhn60f3/3KiR8xuj2vASgEqphxT5O\n" +
-                "fwIDAQAB");
-        signature.initVerify(localPublicKey);
-        signature.update(data.getBytes());
-        byte[] bytesSign = Base64.decode(sign);
-        System.out.println(bytesSign);
-        return signature.verify(bytesSign);
-    }catch (Exception e){
-        e.printStackTrace();
-        return false;}
-       }
-    public static PublicKey getPublicKeyFromX509(String algorithm, String publicKey) throws Exception {
-
-        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
-        return keyFactory.generatePublic(new X509EncodedKeySpec(Base64.decode("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5+MNqcjgw4bsSWhJfw2M\n" +
-                "+gQB7P+pEiYOfvRmA6kt7Wisp0J3JbOtsLXGnErn5ZY2D8KkSAHtMYbeddphFZQJ\n" +
-                "zUbiaDi75GUAG9XS3MfoKAhvNkK15VcCd8hFgNYCZdwEjZrvx6Zu1B7c29S64LQP\n" +
-                "HceS0nyXF8DwMIVRcIWKy02cexgX0UmUPE0A2sJFoV19ogAHaBIhx5FkTy+eeBJE\n" +
-                "bU03Do97q5G9IN1O3TssvbYBAzugz+yUPww2LadaKexhJGg+5+ufoDd0+V3oFL0/\n" +
-                "ebkJvD0uiBzdE3/ci/tANpInHAUDIHoWZCKxhn60f3/3KiR8xuj2vASgEqphxT5O\n" +
-                "fwIDAQAB")));
-    }*/
-
-        /**
-         * 支行列表接口
-         * @param bank_card
-         * @param terminal_sn
-         * @param terminal_key
-         * @return
-         */
-    @RequestMapping(value = "/banks")
-    @ResponseBody
-    public  String banks(String bank_card,String terminal_sn,String terminal_key) throws JSONException {
-        //获取保存在内存中的终端号，终端密钥
-        terminal_sn = ys.getInstance().getZdh();
-        terminal_key = ys.getInstance().getMy();
-
-        System.out.println("banks:"+"terminal_sn"+terminal_sn+"terminal_key"+terminal_key);
-        String jsonObject = httpProxy.banks(terminal_sn,terminal_key,bank_card);
-
-        System.out.println("banks.MyAndZdh:"+ys.getInstance().getMy()+"终端号:"+ys.getInstance().getZdh());
-        System.out.println("banks.toString():"+jsonObject.toString());
-        return jsonObject.toString();
+    public String a(){
+        System.out.println("a");
+        return "forward:/Shouyin/b";
     }
 
+    @RequestMapping("/b")
+    @ResponseBody
+    public String b(){
+        System.out.println("b");
+        return  "index.html";
+    }
 }
