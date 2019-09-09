@@ -1,5 +1,6 @@
 package com.shouyin.shouyin;
 import com.google.gson.Gson;
+import com.shouyin.shouyin.controller.Notify;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,56 +121,21 @@ public class HttpProxy {
             params.put("client_sn",getClient_Sn(16));  //商户系统订单号,必须在商户系统内唯一；且长度不超过32字节
             params.put("total_amount",total_amount);               //交易总金额
             params.put("payway",payway);	                     //支付方式
-            //params.put("sub_payway","3");                     //二级支付方式
+            params.put("sub_payway","2");                     //二级支付方式
            // params.put("payer_uid","okSzXt6LaRSqxwYDoa9LIRSYWoEY");
             params.put("subject","Pizza");	                 //交易简介
             params.put("operator","Kay");
             //params.put("extended",map2);
-            params.put("notify_url","http://llp-love-llx.com/Shouyin/precreate"); // 	服务器异步回调 url//门店操作员
+            params.put("notify_url","http://llp-love-llx.com/shouqianba/callback/orderdetail"); // 	服务器异步回调 url//门店操作员
             System.out.println("params.toString()"+params.toString());
             String sign = getSign(params.toString() + "ed8ded88da8e35bee0282694faabdf5a");
             String result = HttpUtil.httpPost(url, params.toString(),sign,"100003640007866849");
             System.out.println("result:"+result);
 
-
-            String Notifysign = request.getHeader("Authorization");
-            log.info("【回调sign】Authorization={}",Notifysign);
-            int contentLength = request.getContentLength();
-            if (contentLength < 0) {
-                 return null;
+            return result;
+            } catch (Exception e) {
+                return null;
             }
-            byte[] buffer = new byte[contentLength];
-             for (int i = 0; i < contentLength;) {
-                int readlen = request.getInputStream().read(buffer, i, contentLength - i);
-                    if (readlen == -1) {
-                        break;
-                    }
-                    i += readlen;
-                }
-             String charEncoding = request.getCharacterEncoding();
-                if (charEncoding == null) {
-                    charEncoding = "UTF-8";
-                }
-             String backData = new String(buffer, charEncoding);
-             log.info("【回调body】backData={}",backData);
-             Gson gson = new Gson();
-             Map<String,Object> Notifymap = new HashMap<String,Object>();
-             Notifymap = gson.fromJson(backData,Notifymap.getClass());
-
-
-             log.info("【收钱吧订单号】：sn={}",Notifymap.get("sn"));
-             log.info("【收钱吧商户内部订单号】：client_sn={}",Notifymap.get("client_sn"));
-
-             System.out.println("【收钱吧订单号】：sn={}"+Notifymap.get("sn"));
-             System.out.println("【收钱吧商户内部订单号】：client_sn={}"+Notifymap.get("client_sn"));
-             System.out.println("【收钱吧订单状态】：order_status={}"+Notifymap.get("order_status"));
-                return "success";
-            } catch (IOException e) {
-                log.error("【回调异常】IOException={}",e.getMessage());
-                return "file";
-            }catch (Exception e){
-            return null;
-        }
     }
 
 
@@ -311,16 +277,18 @@ public class HttpProxy {
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("extend_params",jsonObject);
 
+
         params.put("description", "WWWwww");  //商品详情
         params.put("client_sn", getClient_Sn(16));
-        params.put("notify_url","localhost:9500/Shouyin/callback"); // 	服务器异步回调 url
+        //params.put("notify_url","http://egx.mobi/spay/orders.aspx?ID=1079297740"); // 	服务器异步回调 url
         params.put("total_amount",total_amount);  //交易总金额
-        params.put("return_url","http://llp-love-llx.com");  //页面跳转同步通知页面路径
+        params.put("return_url","http://test.front.school.cdpostdsfx.com");  //页面跳转同步通知页面路径
         params.put("terminal_sn","100003640007866849");
-        //params.put("payway","2");
-        params.put("subject","aaa");  //交易概述
+        //params.put("payway","3");
+        params.put("subject","Pizza");  //交易概述
         params.put("operator","kay");  //门店操作员
-        params.put("extended",jsonObject1.toString());
+       // params.put("reflect","302房间");
+        //params.put("extended",jsonObject1.toString());
         final List<Map.Entry<String, String>> list = sortMap(params);
         StringBuffer str = new StringBuffer();
 
@@ -332,9 +300,55 @@ public class HttpProxy {
         // 拼接密钥
         String psign = str.toString()+"key="+"ed8ded88da8e35bee0282694faabdf5a";
         String sign =getSign(psign).toUpperCase();        //加密转大写   getSign为获取加密后的内容
-        StringBuffer newStr = new StringBuffer("https://qr.shouqianba.com/gateway?");
+        System.out.println("sign:"+sign);
+        StringBuffer    newStr = new StringBuffer("https://qr.shouqianba.com/gateway?");
         newStr.append(str+"sign="+sign);
-        System.out.println("newStr.toString():"+newStr.toString());
         return  newStr.toString();
+    }
+
+    public  String dz() throws JSONException {
+        String url = "https://vip-ms.shouqianba.com/api/v1/orders";
+        JSONObject params = new JSONObject();
+        JSONObject items = new JSONObject();
+        Object  items2 [];
+        JSONObject tenders = new JSONObject();
+        JSONObject tenders2 = new JSONObject();
+        tenders2.put("","[]");
+        try{
+            params.put("brand_code","999888");
+            params.put("store_sn","ums001");
+            params.put("store_name","随意store_name");
+            params.put("workstation_sn","1");
+            params.put("check_sn","10000000030");
+            params.put("sales_time","1566370672487");
+            params.put("amount","500");
+
+            //items2 = {items};
+            items.put("item_code","A000000000000");
+            items.put("item_desc","Decoration not null");
+            items.put("category","高跟鞋");
+            items.put("unit","双");
+            items.put("item_qty","1");
+            items.put("item_price","500");
+            items.put("sales_price","500");
+            items.put("type","0");
+            //System.out.println("items2:"+items2.toString());
+
+            tenders.put("time","1566370672487");
+            tenders.put("channel_sn","0ff4e00325954c4fae1aa8b59581b8361");
+            tenders.put("transaction_sn","0ff4e00325954c4fae1aa8b59581b8361");
+            tenders.put("tender_code","156001");
+            tenders.put("tender_desc","现金");
+            tenders.put("amount","500");
+            tenders.put("collected_amount","500");
+            tenders.put("paid_amount","500");
+
+            String sign = getSign(params.toString() + "711a9459a2f7600100e0b777493d6800");
+            String result = HttpUtil.httpPost(url, params.toString(),sign,"100003640008737123");
+
+            return  result;
+        }catch (Exception e){
+            return null;
+        }
     }
 }

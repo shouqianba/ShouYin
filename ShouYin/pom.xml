@@ -24,6 +24,14 @@
 
 
     <dependencies>
+        <!--Tomcat-->
+       <!-- <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>-->
+
     <!--springboot开发web项目的起步依赖-->
     <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -211,6 +219,15 @@
     </dependencies>
     <build>
         <plugins>
+            <!--Tomcat-->
+            <!--<plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <configuration>
+                    <port>80</port>
+                    <path>/***</path>
+                </configuration>
+            </plugin>-->
             <!--打包跳过测试包-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

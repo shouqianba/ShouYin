@@ -1,9 +1,12 @@
 package com.shouyin.shouyin.controller;
 
 import com.google.gson.Gson;
+import com.shouyin.shouyin.model.NotifyResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -23,8 +26,7 @@ import java.util.Map;
 public class Notify {
 
     @RequestMapping("/orderdetail")
-    public String proback(HttpServletRequest request) {
-
+    public String proback(HttpServletRequest request, Model model) {
         try {
             String sign = request.getHeader("Authorization");
             log.info("【回调sign】Authorization={}",sign);
@@ -46,6 +48,7 @@ public class Notify {
             }
             String backData = new String(buffer, charEncoding);
             log.info("【回调body】backData={}",backData);
+
             Gson gson = new Gson();
             Map<String,Object> map = new HashMap<String,Object>();
             map = gson.fromJson(backData,map.getClass());
@@ -53,10 +56,13 @@ public class Notify {
 
             log.info("【收钱吧订单号】：sn={}",map.get("sn"));
             log.info("【收钱吧商户内部订单号】：client_sn={}",map.get("client_sn"));
+            log.info("【收钱吧订单状态】：order_status={}",map.get("order_status"));
 
-             System.out.println("【收钱吧订单号】：sn={}"+map.get("sn"));
-            System.out.println("【收钱吧商户内部订单号】：client_sn={}"+map.get("client_sn"));
-            System.out.println("【收钱吧订单状态】：order_status={}"+map.get("order_status"));
+            if(map.get("order_status") != null){
+                NotifyResult.getInstance().setSn(map.get("sn").toString());
+                NotifyResult.getInstance().setClient_sn(map.get("client_sn").toString());
+                NotifyResult.getInstance().setOrder_status(map.get("order_status").toString());
+            }
             return "success";
         } catch (IOException e) {
             log.error("【回调异常】IOException={}",e.getMessage());

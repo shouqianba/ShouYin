@@ -8,6 +8,7 @@ import com.shouyin.shouyin.model.City;
 import com.shouyin.shouyin.model.Province;
 import com.shouyin.shouyin.model.Region;
 import com.shouyin.shouyin.service.ProvinceService;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.util.*;
  **/
 @Controller
 @RequestMapping("/NetIn")
+@Slf4j
 public class WoSaiControllerNetIn  {
 
     HttpPrxyNetIn httpPrxy2 = new HttpPrxyNetIn();
@@ -68,6 +70,7 @@ public class WoSaiControllerNetIn  {
         System.out.println("所有省:"+provinceService.provinceSelectAll());
         System.out.println("北京市市:"+cityMapper.citySelect(province));
         System.out.println("北京区:"+regionMapper.regionSelect(city));
+        log.info("所有省:{}",provinceService.provinceSelectAll());
         return "netin";
     }
 

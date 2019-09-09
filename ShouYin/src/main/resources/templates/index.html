@@ -90,7 +90,7 @@
              <br>
             <br>
             <button type="button" class="btn btn-success TM">条码付款</button>
-            <button type="button" class="btn btn-success Pro">聚合付款</button>
+            <button type="button" class="btn btn-success Pro">Pro付款</button>
           </div>
         </el-col>
         <el-col :span="18">
@@ -888,7 +888,7 @@
         $(".ZFB").click(function () {
             $.ajax({
                 type: "POST",
-                url: "/Shouyin/a",
+                url: "/Shouyin/precreate",
                 data: {
                     total_amount:$("#zongjia").text()*100,
                     payway:"1",
@@ -896,11 +896,1108 @@
                     hb_fq_num:"12"},
                 dataType: "json",
                 success : function (data) {
-                    alert(data)
+                    $("#result").empty();
+                    $("#input1").empty();
+                    $("#input1").val(data.biz_response.data.client_sn);
+                    $("#result").append("{result_code:"+data.result_code+"\n"+
+                        "error_code:"+data.error_code+"\n"+
+                        "error_message:"+data.error_message+"\n"+
+
+                        "biz_response:{result_code:"+data.biz_response.result_code+"\n"+
+                        "error_code:"+data.biz_response.error_code+"\n"+
+                        "error_message:"+data.biz_response.error_message+"\n"+
+
+                        "data:{sn:"+data.biz_response.data.sn+"\n"+
+                        "client_sn:"+data.biz_response.data.client_sn+"\n"+
+                        "client_tsn:"+data.biz_response.data.client_tsn+"\n"+
+                        "trade_no:"+data.biz_response.data.trade_no+"\n"+
+                        "finish_time:"+data.biz_response.data.finish_time+"\n"+
+                        "channel_finish_time:"+data.biz_response.data.finish_time+"\n"+
+                        "status:"+data.biz_response.data.status+"\n"+
+                        "order_status:"+data.biz_response.data.order_status+"\n"+
+                        "payway:"+data.biz_response.data.payway+"\n"+
+                        "payway_name:"+data.biz_response.data.payway_name+"\n"+
+                        "sub_payway:"+data.biz_response.data.sub_payway+"\n"+
+                        "payer_uid:"+data.biz_response.data.payer_uid+"\n"+
+                        "payer_login:"+data.biz_response.data.payer_login+"\n"+
+                        "total_amount:"+data.biz_response.data.total_amount+"\n"+
+                        "net_amount:"+data.biz_response.data.net_amount+"\n"+
+                        "qr_code:"+data.biz_response.data.qr_code+"\n"+
+                        "qr_code_image_url:"+data.biz_response.data.qr_code_image_url+"\n"+
+                        "subject:"+data.biz_response.data.subject+"\n"+
+                        "operator"+data.biz_response.data.operator+"\n"+
+                        "},payment_list:[]}}}");
+
+                    $("#myModal8").modal("show");
+                    $("#ErWeiMa").empty();
+                    $("#ErWeiMa").qrcode({
+                        width : 140,
+                        height : 140,
+                        render : "canvas", //设置渲染方式 table canvas
+                        typeNumber : -1,  //计算模式
+                        correctLevel : 0,//纠错等级
+                        background : "#ffffff",//背景颜色
+                        foreground : "#000000",//前景颜色
+                        text : data.biz_response.data.qr_code
+                    })
+                    $("#CloseErWeiMa").click(function () {
+                        $("#myModal8").modal("hide");
+                        //清除setInterval
+                        clearInterval(iCount);
+                    })
+                    //轮询
+                    var iCount = setInterval(
+                        //查询
+                        function(){
+                            $.ajax({
+                                type:"POST",
+                                url:"/Shouyin/query",
+                                dataType:"json",
+                                data:{client_sn:$("#input1").val()},
+                                success:function(data){
+                                    $("#result").empty();
+                                        if(data.biz_response.data.order_status == "PAID"){
+                                            clearInterval(iCount);
+                                            $("#myModal8").modal("hide");
+                                            alert("支付成功");
+                                            $("#result").empty();
+                                            $("#result").append("{result_code:" + data.result_code + "\n" +
+                                                ",error_code:" + data.error_code + "\n" +
+                                                ",error_message:" + data.error_message + "\n" +
+                                                ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                                ",error_code:" + data.biz_response.error_code + "\n" +
+                                                ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                                ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                                ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                                ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                                ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                                ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                                ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                                ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                                ",status:" + data.biz_response.data.status + "\n" +
+                                                ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                                ",payway:" + data.biz_response.data.payway + "\n" +
+                                                ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                                ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                                ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                                ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                                ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                                ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                                ",subject:" + data.biz_response.data.subject + "\n" +
+                                                ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                                ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                                ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                                ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                        }else if(data.biz_response.data.order_status ==  "PAY_CANCELED"){
+                                            clearInterval(iCount);
+                                            $("#myModal8").modal("hide");
+                                            alert("订单已取消");
+                                            $("#result").empty();
+                                            $("#result").append("{result_code:" + data.result_code + "\n" +
+                                                ",error_code:" + data.error_code + "\n" +
+                                                ",error_message:" + data.error_message + "\n" +
+                                                ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                                ",error_code:" + data.biz_response.error_code + "\n" +
+                                                ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                                ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                                ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                                ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                                ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                                ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                                ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                                ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                                ",status:" + data.biz_response.data.status + "\n" +
+                                                ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                                ",payway:" + data.biz_response.data.payway + "\n" +
+                                                ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                                ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                                ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                                ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                                ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                                ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                                ",subject:" + data.biz_response.data.subject + "\n" +
+                                                ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                                ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                                ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                                ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                        }else if(data.biz_response.data.order_status ==  "REFUNDED"){
+                                            clearInterval(iCount);
+                                            $("#myModal8").modal("hide");
+                                            alert("订单已全额退款");
+                                            $("#result").empty();
+                                            $("#result").append("{result_code:" + data.result_code + "\n" +
+                                                ",error_code:" + data.error_code + "\n" +
+                                                ",error_message:" + data.error_message + "\n" +
+                                                ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                                ",error_code:" + data.biz_response.error_code + "\n" +
+                                                ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                                ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                                ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                                ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                                ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                                ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                                ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                                ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                                ",status:" + data.biz_response.data.status + "\n" +
+                                                ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                                ",payway:" + data.biz_response.data.payway + "\n" +
+                                                ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                                ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                                ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                                ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                                ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                                ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                                ",subject:" + data.biz_response.data.subject + "\n" +
+                                                ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                                ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                                ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                                ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                        }else if(data.biz_response.data.order_status ==  "PARTIAL_REFUNDED"){
+                                            clearInterval(iCount);
+                                            $("#myModal8").modal("hide");
+                                            alert("订单已部分退款");
+                                            $("#result").empty();
+                                            $("#result").append("{result_code:" + data.result_code + "\n" +
+                                                ",error_code:" + data.error_code + "\n" +
+                                                ",error_message:" + data.error_message + "\n" +
+                                                ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                                ",error_code:" + data.biz_response.error_code + "\n" +
+                                                ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                                ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                                ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                                ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                                ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                                ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                                ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                                ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                                ",status:" + data.biz_response.data.status + "\n" +
+                                                ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                                ",payway:" + data.biz_response.data.payway + "\n" +
+                                                ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                                ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                                ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                                ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                                ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                                ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                                ",subject:" + data.biz_response.data.subject + "\n" +
+                                                ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                                ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                                ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                                ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                        }else if(data.biz_response.data.order_status ==  "CANCELED"){
+                                            clearInterval(iCount);
+                                            $("#myModal8").modal("hide");
+                                            alert("订单已撤单");
+                                            $("#result").empty();
+                                            $("#result").append("{result_code:" + data.result_code + "\n" +
+                                                ",error_code:" + data.error_code + "\n" +
+                                                ",error_message:" + data.error_message + "\n" +
+                                                ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                                ",error_code:" + data.biz_response.error_code + "\n" +
+                                                ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                                ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                                ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                                ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                                ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                                ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                                ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                                ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                                ",status:" + data.biz_response.data.status + "\n" +
+                                                ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                                ",payway:" + data.biz_response.data.payway + "\n" +
+                                                ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                                ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                                ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                                ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                                ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                                ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                                ",subject:" + data.biz_response.data.subject + "\n" +
+                                                ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                                ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                                ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                                ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                        }else if(data.biz_response.result_code ==  "400"){
+                                            clearInterval(iCount);
+                                            $("#myModal8").modal("hide");
+                                            alert("错误");
+                                            $("#result").empty();
+                                            $("#result").append("{result_code:" + data.result_code + "\n" +
+                                                ",error_code:" + data.error_code + "\n" +
+                                                ",error_message:" + data.error_message + "\n" +
+                                                ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                                ",error_code:" + data.biz_response.error_code + "\n" +
+                                                ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                                ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                                ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                                ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                                ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                                ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                                ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                                ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                                ",status:" + data.biz_response.data.status + "\n" +
+                                                ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                                ",payway:" + data.biz_response.data.payway + "\n" +
+                                                ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                                ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                                ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                                ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                                ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                                ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                                ",subject:" + data.biz_response.data.subject + "\n" +
+                                                ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                                ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                                ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                                ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                        }
+                                    }
+                            });
+                        },3000);
+                  }
+                })
+            })
+
+        //微信支付
+        $(".WX").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/Shouyin/precreate",
+                data: {
+                    total_amount:$("#zongjia").text()*100,
+                    payway:"3",
+                    hb_fq_seller_percent:"100",
+                    hb_fq_num:"12"},
+                dataType: "json",
+                success : function (data) {
+                    $("#result").empty();
+                    $("#input1").empty();
+                    $("#input1").val(data.biz_response.data.client_sn);
+                    $("#result").append("{result_code:"+data.result_code+"\n"+
+                        "error_code:"+data.error_code+"\n"+
+                        "error_message:"+data.error_message+"\n"+
+
+                        "biz_response:{result_code:"+data.biz_response.result_code+"\n"+
+                        "error_code:"+data.biz_response.error_code+"\n"+
+                        "error_message:"+data.biz_response.error_message+"\n"+
+
+                        "data:{sn:"+data.biz_response.data.sn+"\n"+
+                        "client_sn:"+data.biz_response.data.client_sn+"\n"+
+                        "client_tsn:"+data.biz_response.data.client_tsn+"\n"+
+                        "trade_no:"+data.biz_response.data.trade_no+"\n"+
+                        "finish_time:"+data.biz_response.data.finish_time+"\n"+
+                        "channel_finish_time:"+data.biz_response.data.finish_time+"\n"+
+                        "status:"+data.biz_response.data.status+"\n"+
+                        "order_status:"+data.biz_response.data.order_status+"\n"+
+                        "payway:"+data.biz_response.data.payway+"\n"+
+                        "payway_name:"+data.biz_response.data.payway_name+"\n"+
+                        "sub_payway:"+data.biz_response.data.sub_payway+"\n"+
+                        "payer_uid:"+data.biz_response.data.payer_uid+"\n"+
+                        "payer_login:"+data.biz_response.data.payer_login+"\n"+
+                        "total_amount:"+data.biz_response.data.total_amount+"\n"+
+                        "net_amount:"+data.biz_response.data.net_amount+"\n"+
+                        "qr_code:"+data.biz_response.data.qr_code+"\n"+
+                        "qr_code_image_url:"+data.biz_response.data.qr_code_image_url+"\n"+
+                        "subject:"+data.biz_response.data.subject+"\n"+
+                        "operator"+data.biz_response.data.operator+"\n"+
+                        "},payment_list:[]}}}");
+
+                    $("#myModal8").modal("show");
+                    $("#ErWeiMa").empty();
+                    $("#ErWeiMa").qrcode({
+                        width : 140,
+                        height : 140,
+                        render : "canvas", //设置渲染方式 table canvas
+                        typeNumber : -1,  //计算模式
+                        correctLevel : 0,//纠错等级
+                        background : "#ffffff",//背景颜色
+                        foreground : "#000000",//前景颜色
+                        text : data.biz_response.data.qr_code
+                    })
+                    $("#CloseErWeiMa").click(function () {
+                        $("#myModal8").modal("hide");
+                        //清除setInterval
+                        clearInterval(iCount);
+                    })
+                    //轮询
+                    var iCount = setInterval(
+                        //查询
+                        function(){
+                            $.ajax({
+                                type:"POST",
+                                url:"/Shouyin/query",
+                                dataType:"json",
+                                data:{client_sn:$("#input1").val()},
+                                success:function(data){
+                                    $("#result").empty();
+                                    if(data.biz_response.data.order_status == "PAID"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("支付成功");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "PAY_CANCELED"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("订单已取消");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "REFUNDED"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("订单已全额退款");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "PARTIAL_REFUNDED"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("订单已部分退款");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "CANCELED"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("订单已撤单");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.result_code ==  "400"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("错误");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }
+                                }
+                            });
+                        },3000);
                 }
             })
         })
-    })
+
+        //条码支付
+        $(".TM").click(function () {
+            if($("#tiaoma").val() == ""){
+                alert("请输入付款条码");
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: "/Shouyin/pay",
+                data: {
+                    total_amount:$("#zongjia").text()*100,
+                    dynamic_id:$("#tiaoma").val(),
+                    hb_fq_seller_percent:"100",
+                    hb_fq_num:"12"},
+                dataType: "json",
+                success : function (data) {
+                    $("#result").empty();
+                    $("#input1").empty();
+                    $("#input1").val(data.biz_response.data.client_sn);
+                    $("#result").append("{result_code:"+data.result_code+"\n"+
+                        "error_code:"+data.error_code+"\n"+
+                        "error_message:"+data.error_message+"\n"+
+
+                        "biz_response:{result_code:"+data.biz_response.result_code+"\n"+
+                        "error_code:"+data.biz_response.error_code+"\n"+
+                        "error_message:"+data.biz_response.error_message+"\n"+
+
+                        "data:{sn:"+data.biz_response.data.sn+"\n"+
+                        "client_sn:"+data.biz_response.data.client_sn+"\n"+
+                        "client_tsn:"+data.biz_response.data.client_tsn+"\n"+
+                        "trade_no:"+data.biz_response.data.trade_no+"\n"+
+                        "finish_time:"+data.biz_response.data.finish_time+"\n"+
+                        "channel_finish_time:"+data.biz_response.data.finish_time+"\n"+
+                        "status:"+data.biz_response.data.status+"\n"+
+                        "order_status:"+data.biz_response.data.order_status+"\n"+
+                        "payway:"+data.biz_response.data.payway+"\n"+
+                        "payway_name:"+data.biz_response.data.payway_name+"\n"+
+                        "sub_payway:"+data.biz_response.data.sub_payway+"\n"+
+                        "payer_uid:"+data.biz_response.data.payer_uid+"\n"+
+                        "payer_login:"+data.biz_response.data.payer_login+"\n"+
+                        "total_amount:"+data.biz_response.data.total_amount+"\n"+
+                        "net_amount:"+data.biz_response.data.net_amount+"\n"+
+                        "qr_code:"+data.biz_response.data.qr_code+"\n"+
+                        "qr_code_image_url:"+data.biz_response.data.qr_code_image_url+"\n"+
+                        "subject:"+data.biz_response.data.subject+"\n"+
+                        "operator"+data.biz_response.data.operator+"\n"+
+                        "},payment_list:[]}}}");
+
+
+                    //轮询
+                    var iCount = setInterval(
+                        //查询
+                        function(){
+                            $.ajax({
+                                type:"POST",
+                                url:"/Shouyin/query",
+                                dataType:"json",
+                                data:{client_sn:$("#input1").val()},
+                                success:function(data){
+                                    $("#result").empty();
+                                    if(data.biz_response.data.order_status == "PAID"){
+                                        clearInterval(iCount);
+                                        alert("支付成功");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "PAY_CANCELED"){
+                                        clearInterval(iCount);
+                                        alert("订单已取消");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "REFUNDED"){
+                                        clearInterval(iCount);
+                                        alert("订单已全额退款");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "PARTIAL_REFUNDED"){
+                                        clearInterval(iCount);
+                                        alert("订单已部分退款");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "CANCELED"){
+                                        clearInterval(iCount);
+                                        alert("订单已撤单");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.result_code ==  "400"){
+                                        clearInterval(iCount);
+                                        alert("错误");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }
+                                }
+                            });
+                        },3000);
+                }
+            })
+        })
+
+        //Pro支付
+        $(".Pro").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/Shouyin/gateway",
+                data: {
+                    total_amount:$("#zongjia").text()*100,
+                    hb_fq_seller_percent:"100",
+                    hb_fq_num:"12"},
+                dataType: "json",
+                success : function (data) {
+                    alert("Pro");
+                    $("#result").empty();
+                    $("#result").append(data);
+                    DDH = data.substring(data.indexOf("=") + 1, data.indexOf('&'));
+                    $("#input1").val(DDH);
+                    $("#myModal8").modal("show");
+                    $("#ErWeiMa").empty();
+                    $("#ErWeiMa").qrcode({
+                        width: 140,
+                        height: 140,
+                        render: "canvas", //设置渲染方式 table canvas
+                        typeNumber: -1,  //计算模式
+                        correctLevel: 0,//纠错等级
+                        background: "#ffffff",//背景颜色
+                        foreground: "#000000",//前景颜色
+                        text: data
+                    })
+                    $("#CloseErWeiMa").click(function () {
+                        $("#myModal8").modal("hide");
+                        //清除setInterval
+                        clearInterval(iCount);
+                    })
+                    //轮询
+                    var iCount = setInterval(
+                        //查询
+                        function(){
+                            $.ajax({
+                                type:"POST",
+                                url:"/Shouyin/query",
+                                dataType:"json",
+                                data:{client_sn:$("#input1").val()},
+                                success:function(data){
+                                    $("#result").empty();
+                                    if(data.biz_response.data.order_status == "PAID"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("支付成功");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "PAY_CANCELED"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("订单已取消");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "REFUNDED"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("订单已全额退款");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "PARTIAL_REFUNDED"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("订单已部分退款");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.data.order_status ==  "CANCELED"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("订单已撤单");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }else if(data.biz_response.result_code ==  "400"){
+                                        clearInterval(iCount);
+                                        $("#myModal8").modal("hide");
+                                        alert("错误");
+                                        $("#result").empty();
+                                        $("#result").append("{result_code:" + data.result_code + "\n" +
+                                            ",error_code:" + data.error_code + "\n" +
+                                            ",error_message:" + data.error_message + "\n" +
+                                            ",biz_response:{result_code:" + data.biz_response.result_code + "\n" +
+                                            ",error_code:" + data.biz_response.error_code + "\n" +
+                                            ",error_code_standard:" + data.biz_response.error_code_standard + "\n" +
+                                            ",error_message:" + data.biz_response.error_message + "\n" +
+
+
+                                            ",data:{sn:" + data.biz_response.data.sn + "\n" +
+                                            ",client_sn:" + data.biz_response.data.client_sn + "\n" +
+                                            ",client_tsn:" + data.biz_response.data.client_tsn + "\n" +
+                                            ",trade_no:" + data.biz_response.data.trade_no + "\n" +
+                                            ",finish_time:" + data.biz_response.data.finish_time + "\n" +
+                                            ",channel_finish_time:" + data.biz_response.data.channel_finish_time + "\n" +
+                                            ",status:" + data.biz_response.data.status + "\n" +
+                                            ",order_status:" + data.biz_response.data.order_status + "\n" +
+                                            ",payway:" + data.biz_response.data.payway + "\n" +
+                                            ",payway_name:" + data.biz_response.data.payway_name + "\n" +
+                                            ",sub_payway:" + data.biz_response.data.sub_payway + "\n" +
+                                            ",payer_uid:" + data.biz_response.data.payer_uid + "\n" +
+                                            ",payer_login:" + data.biz_response.data.payer_login + "\n" +
+                                            ",total_amount:" + data.biz_response.data.total_amount + "\n" +
+                                            ",net_amount:" + data.biz_response.data.net_amount + "\n" +
+                                            ",subject:" + data.biz_response.data.subject + "\n" +
+                                            ",operator:" + data.biz_response.data.operator + "\n" +
+
+                                            ",payment_list:[{type:" + data.biz_response.data.payment_list.type + "\n" +
+                                            ",amount_total:" + data.biz_response.data.payment_list.amount_total + "\n" +
+                                            ",amount:" + data.biz_response.data.payment_list.amount + "}]}}");
+                                    }
+                                }
+                            });
+                        },3000);
+                }
+            })
+        })
+        })
 
     new Vue({
       el: '#app',
@@ -1235,476 +2332,6 @@
                             }, 3000);
                      }
                  })*/
-         $.ajax({
-                     type: "POST",
-                     url: "/Shouyin/precreate",
-                     data: { terminal_sn: "",
-                         terminal_key: "",
-                         total_amount:$("#zongjia").text()*100,
-                         hb_fq_seller_percent:"100",
-                         hb_fq_num:"12"},
-                     dataType: "json",
-                     success : function (data) {
-                        $("#result").empty();
-                         $("#input1").empty();
-                         $("#input1").val(data.biz_response.data.client_sn);
-                          $("#result").append("{result_code:"+data.result_code+"\n"+
-                          "error_code:"+data.error_code+"\n"+
-                          "error_message:"+data.error_message+"\n"+
-
-                          "biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                          "error_code:"+data.biz_response.error_code+"\n"+
-                          "error_message:"+data.biz_response.error_message+"\n"+
-
-                          "data:{sn:"+data.biz_response.data.sn+"\n"+
-                          "client_sn:"+data.biz_response.data.client_sn+"\n"+
-                          "client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                          "trade_no:"+data.biz_response.data.trade_no+"\n"+
-                          "finish_time:"+data.biz_response.data.finish_time+"\n"+
-                          "channel_finish_time:"+data.biz_response.data.finish_time+"\n"+
-                          "status:"+data.biz_response.data.status+"\n"+
-                          "order_status:"+data.biz_response.data.order_status+"\n"+
-                          "payway:"+data.biz_response.data.payway+"\n"+
-                          "payway_name:"+data.biz_response.data.payway_name+"\n"+
-                          "sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                          "payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                          "payer_login:"+data.biz_response.data.payer_login+"\n"+
-                          "total_amount:"+data.biz_response.data.total_amount+"\n"+
-                          "net_amount:"+data.biz_response.data.net_amount+"\n"+
-                          "qr_code:"+data.biz_response.data.qr_code+"\n"+
-                          "qr_code_image_url:"+data.biz_response.data.qr_code_image_url+"\n"+
-                          "subject:"+data.biz_response.data.subject+"\n"+
-                          "operator"+data.biz_response.data.operator+"\n"+
-                          "},payment_list:[]}}}");
-
-                          $("#myModal8").modal("show");
-                          $("#ErWeiMa").empty();
-                          $("#ErWeiMa").qrcode({
-                              width : 140,
-                              height : 140,
-                              render : "canvas", //设置渲染方式 table canvas
-                              typeNumber : -1,  //计算模式
-                              correctLevel : 0,//纠错等级
-                              background : "#ffffff",//背景颜色
-                              foreground : "#000000",//前景颜色
-                              text : data.biz_response.data.qr_code
-                          })
-                          $("#CloseErWeiMa").click(function () {
-                              $("#myModal8").modal("hide");
-                              //清除setInterval
-                              clearInterval(iCount);
-                          })
-                          //轮询
-                          var iCount = setInterval(
-                              //查询
-                              function(){
-                                  $.ajax({
-                                      type:"POST",
-                                      url:"/Shouyin/query",
-                                      dataType:"json",
-                                      data:{sn:data.biz_response.data.sn,client_sn:data.biz_response.data.client_sn},
-                                      success:function(data){
-                                          $("#result").empty();
-                                          if(data.result_code == 200 && data.biz_response.data != null
-                                              && data.biz_response.data.order_status == "CREATED"){
-                                              $("#result").empty();
-                                              $("#result").append("{result_code:"+data.result_code+"\n"+
-                                                  ",error_code:"+data.error_code+"\n"+
-                                                  ",error_message:"+data.error_message+"\n"+
-                                                  ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                                  ",error_code:"+data.biz_response.error_code+"\n"+
-                                                  ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                                  ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                                  ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                                  ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                                  ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                                  ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                                  ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                                  ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                                  ",status:"+data.biz_response.data.status+"\n"+
-                                                  ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                                  ",payway:"+data.biz_response.data.payway+"\n"+
-                                                  ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                                  ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                                  ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                                  ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                                  ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                                  ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                                  ",subject:"+data.biz_response.data.subject+"\n"+
-                                                  ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                                  ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                                  ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                                  ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                          }else if(data.result_code == 200 && data.biz_response.data != null
-                                              && data.biz_response.data.order_status == "PAID"){
-                                              $("#myModal8").modal("hide");
-                                              $("#result").empty();
-                                              $("#result").append("{result_code:"+data.result_code+"\n"+
-                                                  ",error_code:"+data.error_code+"\n"+
-                                                  ",error_message:"+data.error_message+"\n"+
-                                                  ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                                  ",error_code:"+data.biz_response.error_code+"\n"+
-                                                  ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                                  ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                                  ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                                  ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                                  ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                                  ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                                  ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                                  ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                                  ",status:"+data.biz_response.data.status+"\n"+
-                                                  ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                                  ",payway:"+data.biz_response.data.payway+"\n"+
-                                                  ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                                  ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                                  ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                                  ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                                  ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                                  ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                                  ",subject:"+data.biz_response.data.subject+"\n"+
-                                                  ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                                  ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                                  ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                                  ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                              //清除setInterval
-                                              clearInterval(iCount);
-                                              alert("支付成功");
-                                          }else if(data.result_code == 200 && data.biz_response.data != null
-                                              && data.biz_response.data.order_status == "PAY_CANCELED"){
-                                              $("#myModal8").modal("hide");
-                                              $("#result").empty();
-                                              $("#result").append("{result_code:"+data.result_code+"\n"+
-                                                  ",error_code:"+data.error_code+"\n"+
-                                                  ",error_message:"+data.error_message+"\n"+
-                                                  ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                                  ",error_code:"+data.biz_response.error_code+"\n"+
-                                                  ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                                  ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                                  ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                                  ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                                  ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                                  ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                                  ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                                  ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                                  ",status:"+data.biz_response.data.status+"\n"+
-                                                  ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                                  ",payway:"+data.biz_response.data.payway+"\n"+
-                                                  ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                                  ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                                  ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                                  ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                                  ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                                  ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                                  ",subject:"+data.biz_response.data.subject+"\n"+
-                                                  ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                                  ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                                  ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                                  ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                              alert("支付取消");
-                                              //清除setInterval
-                                              clearInterval(iCount);
-                                          }else if(data.result_code == 200 && data.biz_response.data != null
-                                              && data.biz_response.data.order_status == "CANCELED"){
-                                              $("#myModal8").modal("hide");
-                                              $("#result").empty();
-                                              $("#result").append("{result_code:"+data.result_code+"\n"+
-                                                  ",error_code:"+data.error_code+"\n"+
-                                                  ",error_message:"+data.error_message+"\n"+
-                                                  ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                                  ",error_code:"+data.biz_response.error_code+"\n"+
-                                                  ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                                  ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                                  ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                                  ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                                  ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                                  ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                                  ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                                  ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                                  ",status:"+data.biz_response.data.status+"\n"+
-                                                  ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                                  ",payway:"+data.biz_response.data.payway+"\n"+
-                                                  ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                                  ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                                  ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                                  ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                                  ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                                  ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                                  ",subject:"+data.biz_response.data.subject+"\n"+
-                                                  ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                                  ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                                  ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                                  ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                              //alert("");
-                                              //清除setInterval
-                                              clearInterval(iCount);
-                                          }else if(data.result_code == 200 && data.biz_response.data != null
-                                              && data.biz_response.data.order_status == "PAY_ERROR"){
-                                              $("#result").empty();
-                                              $("#result").append("提醒顾客输入密码..."+"\n"+"{result_code:"+data.result_code+"\n"+
-                                                  ",error_code:"+data.error_code+"\n"+
-                                                  ",error_message:"+data.error_message+"\n"+
-                                                  ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                                  ",error_code:"+data.biz_response.error_code+"\n"+
-                                                  ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                                  ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                                  ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                                  ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                                  ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                                  ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                                  ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                                  ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                                  ",status:"+data.biz_response.data.status+"\n"+
-                                                  ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                                  ",payway:"+data.biz_response.data.payway+"\n"+
-                                                  ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                                  ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                                  ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                                  ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                                  ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                                  ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                                  ",subject:"+data.biz_response.data.subject+"\n"+
-                                                  ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                                  ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                                  ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                                  ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                          }
-                                      }
-                                  });
-                              },3000);
-                     }
-                 })
-         /* $.ajax({
-                   type: "POST",
-                   url: "/Shouyin/pay",
-                   data: {
-                       dynamic_id:$("#tiaoma").val(),
-                       total_amount:$("#zongjia").text()*100,
-                       hb_fq_seller_percent:"0",
-                       hb_fq_num:"12"},
-                   dataType: "json",
-                   success : function (data) {
-                       $("#result").empty();
-                       $("#input1").empty();
-                       if(data.result_code == 400){
-                           $("#myModal3").modal('hide');
-                           $("#result").empty();
-                           $("#result").append("{result_code:"+data.result_code+"\n"+
-                               ",error_code:"+data.error_code+"\n"+
-                               ",error_code_standard:"+data.error_code_standard+"\n"+
-                               ",error_message:}"+data.error_message);
-                       }
-                       $("#result").empty();
-                       $("#result").append("{result_code:"+data.result_code+"\n"+
-                           ",error_code:"+data.error_code+"\n"+
-                           ",error_message:"+data.error_message+"\n"+
-                           ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                           ",error_code:"+data.biz_response.error_code+"\n"+
-                           ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                           ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                           ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                           ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                           ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                           ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                           ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                           ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                           ",status:"+data.biz_response.data.status+"\n"+
-                           ",order_status:"+data.biz_response.data.order_status+"\n"+
-                           ",payway:"+data.biz_response.data.payway+"\n"+
-                           ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                           ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                           ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                           ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                           ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                           ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                           ",subject:"+data.biz_response.data.subject+"\n"+
-                           ",operator:"+data.biz_response.data.operator+"\n"+
-
-                           ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                           ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                           ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                     /!*  //轮询
-                       var iCount = setInterval(
-                           //查询
-                           function(){
-                               $.ajax({
-                                   type:"POST",
-                                   url:"/Shouyin/query",
-                                   dataType:"json",
-                                   data:{sn:data.biz_response.data.sn,client_sn:data.biz_response.data.client_sn},
-                                   success:function(data){
-                                       $("#result").empty();
-                                       if(data.result_code == 200 && data.biz_response.data != null
-                                           && data.biz_response.data.order_status == "CREATED"){
-                                           $("#result").empty();
-                                           $("#result").append("{result_code:"+data.result_code+"\n"+
-                                               ",error_code:"+data.error_code+"\n"+
-                                               ",error_message:"+data.error_message+"\n"+
-                                               ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                               ",error_code:"+data.biz_response.error_code+"\n"+
-                                               ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                               ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                               ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                               ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                               ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                               ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                               ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                               ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                               ",status:"+data.biz_response.data.status+"\n"+
-                                               ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                               ",payway:"+data.biz_response.data.payway+"\n"+
-                                               ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                               ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                               ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                               ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                               ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                               ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                               ",subject:"+data.biz_response.data.subject+"\n"+
-                                               ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                               ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                               ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                               ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                       }else if(data.result_code == 200 && data.biz_response.data != null
-                                           && data.biz_response.data.order_status == "PAID"){
-                                           $("#myModal3").modal('hide');
-                                           $("#result").empty();
-                                           $("#result").append("{result_code:"+data.result_code+"\n"+
-                                               ",error_code:"+data.error_code+"\n"+
-                                               ",error_message:"+data.error_message+"\n"+
-                                               ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                               ",error_code:"+data.biz_response.error_code+"\n"+
-                                               ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                               ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                               ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                               ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                               ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                               ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                               ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                               ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                               ",status:"+data.biz_response.data.status+"\n"+
-                                               ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                               ",payway:"+data.biz_response.data.payway+"\n"+
-                                               ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                               ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                               ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                               ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                               ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                               ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                               ",subject:"+data.biz_response.data.subject+"\n"+
-                                               ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                               ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                               ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                               ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                           //清除setInterval
-                                           clearInterval(iCount);
-                                           alert("支付成功");
-                                       }else if(data.result_code == 200 && data.biz_response.data != null
-                                           && data.biz_response.data.order_status == "PAY_CANCELED"){
-                                           $("#myModal3").modal('hide');
-                                           $("#result").empty();
-                                           $("#result").append("{result_code:"+data.result_code+"\n"+
-                                               ",error_code:"+data.error_code+"\n"+
-                                               ",error_message:"+data.error_message+"\n"+
-                                               ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                               ",error_code:"+data.biz_response.error_code+"\n"+
-                                               ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                               ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                               ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                               ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                               ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                               ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                               ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                               ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                               ",status:"+data.biz_response.data.status+"\n"+
-                                               ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                               ",payway:"+data.biz_response.data.payway+"\n"+
-                                               ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                               ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                               ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                               ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                               ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                               ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                               ",subject:"+data.biz_response.data.subject+"\n"+
-                                               ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                               ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                               ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                               ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                           alert("支付取消");
-                                           //清除setInterval
-                                           clearInterval(iCount);
-                                       }else if(data.result_code == 200 && data.biz_response.data != null
-                                           && data.biz_response.data.order_status == "PAY_ERROR"){
-                                           $("#result").empty();
-                                           $("#result").append("提醒顾客输入密码..."+"\n"+"{result_code:"+data.result_code+"\n"+
-                                               ",error_code:"+data.error_code+"\n"+
-                                               ",error_message:"+data.error_message+"\n"+
-                                               ",biz_response:{result_code:"+data.biz_response.result_code+"\n"+
-                                               ",error_code:"+data.biz_response.error_code+"\n"+
-                                               ",error_code_standard:"+data.biz_response.error_code_standard+"\n"+
-                                               ",error_message:"+data.biz_response.error_message+"\n"+
-
-
-                                               ",data:{sn:"+data.biz_response.data.sn+"\n"+
-                                               ",client_sn:"+data.biz_response.data.client_sn+"\n"+
-                                               ",client_tsn:"+data.biz_response.data.client_tsn+"\n"+
-                                               ",trade_no:"+data.biz_response.data.trade_no+"\n"+
-                                               ",finish_time:"+data.biz_response.data.finish_time+"\n"+
-                                               ",channel_finish_time:"+data.biz_response.data.channel_finish_time+"\n"+
-                                               ",status:"+data.biz_response.data.status+"\n"+
-                                               ",order_status:"+data.biz_response.data.order_status+"\n"+
-                                               ",payway:"+data.biz_response.data.payway+"\n"+
-                                               ",payway_name:"+data.biz_response.data.payway_name+"\n"+
-                                               ",sub_payway:"+data.biz_response.data.sub_payway+"\n"+
-                                               ",payer_uid:"+data.biz_response.data.payer_uid+"\n"+
-                                               ",payer_login:"+data.biz_response.data.payer_login+"\n"+
-                                               ",total_amount:"+data.biz_response.data.total_amount+"\n"+
-                                               ",net_amount:"+data.biz_response.data.net_amount+"\n"+
-                                               ",subject:"+data.biz_response.data.subject+"\n"+
-                                               ",operator:"+data.biz_response.data.operator+"\n"+
-
-                                               ",payment_list:[{type:"+data.biz_response.data.payment_list.type+"\n"+
-                                               ",amount_total:"+data.biz_response.data.payment_list.amount_total+"\n"+
-                                               ",amount:"+data.biz_response.data.payment_list.amount+"}]}}");
-                                       }else{
-                                           $("#myModal3").modal('hide');
-                                           $("#result").empty();
-                                           $("#result").append("提醒顾客输入密码..."+"\n"+"{result_code:"+data.result_code+"\n"+
-                                               ",error_code:"+data.error_code+"\n"+
-                                               ",error_code_standard:"+data.error_code_standard+"\n"+
-                                               ",error_message:}"+data.error_message);
-                                           //清除setInterval
-                                           clearInterval(iCount);
-                                       }
-                                   }
-                               });
-                           },3000);*!/
-                   }
-               })*/
             })
            /*$(function () {
                  $("#myModal3").modal('show');

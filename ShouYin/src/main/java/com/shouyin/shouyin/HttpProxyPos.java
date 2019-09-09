@@ -161,18 +161,6 @@ public class HttpProxyPos {
 
             String result = HttpUtil.httpPostPos(url,request.toString(),sign); //请求
             System.out.println("result："+result);
-
-             // 此处引入的是 com.alibaba.fastjson.JSONObject; 对象
-           com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(result);
-                // 获取到 key 对应的值
-
-            String content = jsonObject.get("response").toString();
-
-               /* String sign2     =  RSASignature.sign(content,publicKey,"UTF-8");
-             boolean a =    RSASignature.doCheck(content,sign2,publicKey,"UTF-8");*/
-
-
-            /* System.out.println("a"+a);*/
             return  result;
             } catch (Exception e) {
                 return null;

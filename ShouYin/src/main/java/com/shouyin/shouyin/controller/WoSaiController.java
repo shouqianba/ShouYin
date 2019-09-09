@@ -1,6 +1,7 @@
 package com.shouyin.shouyin.controller;
 
 import com.shouyin.shouyin.HttpProxy;
+import com.shouyin.shouyin.model.NotifyResult;
 import com.shouyin.shouyin.model.ys;
 import com.sun.jersey.core.util.Base64;
 import org.json.JSONException;
@@ -9,12 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -48,7 +54,7 @@ public class WoSaiController {
   @RequestMapping(value = "/activate")
   @ResponseBody
     public  String activate(String vendor_sn,String vendor_key,String appid,String code) throws JSONException {
-        System.out.println("activate:"+"vendor_sn"+vendor_sn+"vendor_key"+vendor_key+"appid"+appid+"code"+code);
+      System.out.println("activate:"+"vendor_sn"+vendor_sn+"vendor_key"+vendor_key+"appid"+appid+"code"+code);
         JSONObject jsonObject=httpProxy.activate(vendor_sn,vendor_key,appid,code);
 
         //获取终端号，终端密钥保存到内存中
@@ -105,6 +111,7 @@ public class WoSaiController {
         String result = httpProxy.pay(terminal_sn,terminal_key,total_amount,dynamic_id,hb_fq_seller_percent,hb_fq_num);
         System.out.println("pay.MyAndZdh:"+ys.getInstance().getMy()+"终端号:"+ys.getInstance().getZdh());
         System.out.println("pay.toString():"+result.toString());
+
         return result.toString();
     }
 
@@ -209,7 +216,7 @@ public class WoSaiController {
      */
     @RequestMapping("/gateway")
     @ResponseBody
-    public String wapapipro(String terminal_sn, String terminal_key, String total_amount,String hb_fq_seller_percent,String hb_fq_num) throws IOException, JSONException {
+    public String wapapipro(HttpSession session,String terminal_sn, String terminal_key, String total_amount,String hb_fq_seller_percent,String hb_fq_num) throws IOException, JSONException {
         //获取保存在内存中的终端号，终端密钥
         terminal_sn = ys.getInstance().getZdh();
         terminal_key = ys.getInstance().getMy();
@@ -220,17 +227,39 @@ public class WoSaiController {
         System.out.println("wapapipro.toString()"+result.toString());
         return result.toString();
     }
-    @RequestMapping("/a")
 
-    public String a(){
-        System.out.println("a");
-        return "forward:/Shouyin/b";
+    @RequestMapping("/notifyResult")
+    @ResponseBody
+    public String notifyResult(String client_sn) throws JSONException {
+        System.out.println("notifyResultclient_sn"+client_sn);
+        JSONObject jsonObject = new JSONObject();
+        if (NotifyResult.getInstance().getSn() != null && NotifyResult.getInstance().getSn() != "") {
+            System.out.println("getClient_sn()"+NotifyResult.getInstance().getClient_sn());
+                jsonObject.put("sn", NotifyResult.getInstance().getSn());
+                jsonObject.put("client_sn", NotifyResult.getInstance().getClient_sn());
+                jsonObject.put("order_status", NotifyResult.getInstance().getOrder_status());
+                return jsonObject.toString();
+            }
+            return null;
     }
 
-    @RequestMapping("/b")
+    @RequestMapping("/notifyResult2")
     @ResponseBody
-    public String b(){
-        System.out.println("b");
-        return  "index.html";
+    public String notifyResult2() throws JSONException {
+        String success = "success";
+        NotifyResult.getInstance().setSn("");
+        NotifyResult.getInstance().setClient_sn("");
+        NotifyResult.getInstance().setOrder_status("");
+        System.out.println("NotifyResult.getInstance().getSn():"+NotifyResult.getInstance().getSn());
+        return success;
+    }
+
+    @RequestMapping("/dz")
+    @ResponseBody
+    public String dz() throws JSONException {
+        String success = "success";
+        httpProxy.dz();
+       // System.out.println("NotifyResult.getInstance().getSn():"+NotifyResult.getInstance().getSn());
+        return success;
     }
 }
